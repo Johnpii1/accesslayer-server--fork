@@ -11,4 +11,5 @@ model User {
 
 	avatar					String?
 	
+	stellarWallet		StellarWallet?
 }
