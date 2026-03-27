@@ -10,7 +10,7 @@ import {
    sendSuccess,
    sendValidationError,
 } from '../../utils/api-response.utils';
-import { ZodError } from 'zod';
+import { parsePublicQuery } from '../../utils/public-query-parse.utils';
 
 /**
  * Controller for GET /api/v1/creators
@@ -21,7 +21,11 @@ import { ZodError } from 'zod';
 export const httpListCreators: AsyncController = async (req, res, next) => {
    try {
       // Validate query parameters
-      const validatedQuery = CreatorListQuerySchema.parse(req.query);
+      const parsed = parsePublicQuery(CreatorListQuerySchema, req.query);
+      if (!parsed.ok) {
+         return sendValidationError(res, 'Invalid query parameters', parsed.details);
+      }
+      const validatedQuery = parsed.data;
 
       // Fetch creators and total count
       const [creators, total] = await fetchCreatorList(validatedQuery);
@@ -39,13 +43,6 @@ export const httpListCreators: AsyncController = async (req, res, next) => {
 
       sendSuccess(res, response);
    } catch (error) {
-      if (error instanceof ZodError) {
-         const details = error.errors.map(err => ({
-            field: err.path.join('.'),
-            message: err.message,
-         }));
-         return sendValidationError(res, 'Invalid query parameters', details);
-      }
       next(error);
    }
 };

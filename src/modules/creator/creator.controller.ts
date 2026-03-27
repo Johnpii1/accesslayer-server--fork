@@ -1,6 +1,5 @@
 // src/modules/creator/creator.controller.ts
 import { Request, Response } from 'express';
-import { ZodError } from 'zod';
 import { z } from 'zod';
 import {
    sendPaginatedSuccess,
@@ -11,6 +10,7 @@ import {
 import { getPaginatedCreators } from './creator.service';
 import { parseCreatorSortOptions } from './creator.utils';
 import { safeIntParam } from '../../utils/query.utils';
+import { parsePublicQuery } from '../../utils/public-query-parse.utils';
 import {
    DEFAULT_PAGE,
    DEFAULT_PAGE_SIZE,
@@ -37,7 +37,11 @@ const LegacyCreatorQuerySchema = z.object({
 
 export async function listCreators(req: Request, res: Response) {
    try {
-      const { page, limit, sortBy, sortOrder } = LegacyCreatorQuerySchema.parse(req.query);
+      const parsed = parsePublicQuery(LegacyCreatorQuerySchema, req.query);
+      if (!parsed.ok) {
+         return sendValidationError(res, 'Invalid query parameters', parsed.details);
+      }
+      const { page, limit, sortBy, sortOrder } = parsed.data;
 
       const sort = parseCreatorSortOptions(sortBy, sortOrder);
 
@@ -55,13 +59,6 @@ export async function listCreators(req: Request, res: Response) {
          'Creators retrieved successfully'
       );
    } catch (error) {
-      if (error instanceof ZodError) {
-         const details = error.errors.map(err => ({
-            field: err.path.join('.'),
-            message: err.message,
-         }));
-         return sendValidationError(res, 'Invalid query parameters', details);
-      }
       console.error('Error listing creators:', error);
       return sendError(
          res,
