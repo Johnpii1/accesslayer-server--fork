@@ -3,6 +3,10 @@ import {
    CREATOR_LIST_SORT_OPTIONS,
    CREATOR_LIST_SORT_ORDERS,
 } from './creators.sort';
+import {
+   MAX_PAGE_SIZE,
+   MIN_PAGE_SIZE,
+} from '../../constants/pagination.constants';
 
 /**
  * Validation schema for creator list query parameters.
@@ -20,8 +24,8 @@ export const CreatorListQuerySchema = z.object({
       .optional()
       .default('20')
       .transform(val => parseInt(val, 10))
-      .refine(val => val > 0 && val <= 100, {
-         message: 'Limit must be between 1 and 100',
+      .refine(val => val >= MIN_PAGE_SIZE && val <= MAX_PAGE_SIZE, {
+         message: `Limit must be between ${MIN_PAGE_SIZE} and ${MAX_PAGE_SIZE}`,
       }),
    offset: z
       .string()
