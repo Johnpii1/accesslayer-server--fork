@@ -14,6 +14,7 @@ import { parsePublicQuery } from '../../utils/public-query-parse.utils';
 import { wrapPublicCreatorListResponse } from '../creators/public-creator-list-envelope.utils';
 import { resolveCreatorListLimit } from '../creators/creators.limit.utils';
 import { buildCreatorListRequestContext } from '../creators/creator-list-context.utils';
+import { normalizeCreatorListPage } from './creator-list-page.guard';
 import {
    MIN_PAGE_SIZE,
    MAX_PAGE_SIZE,
@@ -43,8 +44,14 @@ export async function listCreators(req: Request, res: Response) {
       const parsed = parsePublicQuery(LegacyCreatorQuerySchema, ctx.query);
 
       if (!parsed.ok) {
-         return sendValidationError(res, 'Invalid query parameters', parsed.details);
+         return sendValidationError(
+            res,
+            'Invalid query parameters',
+            parsed.details
+         );
       }
+const { limit, sortBy, sortOrder } = parsed.data;
+const page = normalizeCreatorListPage(parsed.data.page);
 
       const { page, limit, sortBy, sortOrder } = parsed.data;
       const sort = parseCreatorSortOptions(sortBy, sortOrder);
