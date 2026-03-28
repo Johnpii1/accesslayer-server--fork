@@ -15,9 +15,6 @@ import { wrapPublicCreatorListResponse } from '../creators/public-creator-list-e
 import { resolveCreatorListLimit } from '../creators/creators.limit.utils';
 import { buildCreatorListRequestContext } from '../creators/creator-list-context.utils';
 import {
-  
-DEFAULT_PAGE,
-  
    MIN_PAGE_SIZE,
    MAX_PAGE_SIZE,
 } from '../../constants/pagination.constants';
@@ -31,9 +28,7 @@ const LegacyCreatorQuerySchema = z.object({
       label: 'Page',
    }),
    limit: safeIntParam({
-
-  defaultValue: resolveCreatorListLimit() ?? PUBLIC_PAGE_PAGINATION_DEFAULTS.limit,
-
+      defaultValue: resolveCreatorListLimit() ?? PUBLIC_PAGE_PAGINATION_DEFAULTS.limit,
       min: MIN_PAGE_SIZE,
       max: MAX_PAGE_SIZE,
       label: 'Limit',
@@ -46,11 +41,12 @@ export async function listCreators(req: Request, res: Response) {
    try {
       const ctx = buildCreatorListRequestContext(req);
       const parsed = parsePublicQuery(LegacyCreatorQuerySchema, ctx.query);
+
       if (!parsed.ok) {
          return sendValidationError(res, 'Invalid query parameters', parsed.details);
       }
-      const { page, limit, sortBy, sortOrder } = parsed.data;
 
+      const { page, limit, sortBy, sortOrder } = parsed.data;
       const sort = parseCreatorSortOptions(sortBy, sortOrder);
 
       const { creators, meta } = await getPaginatedCreators({
