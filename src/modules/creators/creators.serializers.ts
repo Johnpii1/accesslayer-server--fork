@@ -1,6 +1,10 @@
 import { CreatorProfile } from '../../types/profile.types';
 import type { OffsetPaginationMeta } from '../../utils/pagination.utils';
 import type { PublicCreatorListEnvelope } from './public-creator-list-envelope.utils';
+import {
+   CreatorListItem,
+   mapCreatorListItem,
+} from './creator-list-item.mapper';
 
 /**
  * Creator summary shape for list responses.
@@ -48,14 +52,14 @@ export function serializeCreatorSummary(
  */
 export function serializeCreatorList(
    profiles: CreatorProfile[]
-): CreatorSummary[] {
-   return profiles.map(serializeCreatorSummary);
+): CreatorListItem[] {
+   return profiles.map(mapCreatorListItem);
 }
 
 /**
  * Paginated creator list response body (offset pagination metadata).
  */
 export type CreatorListResponse = PublicCreatorListEnvelope<
-   CreatorSummary,
+   CreatorListItem,
    OffsetPaginationMeta
 >;
