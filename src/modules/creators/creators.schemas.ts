@@ -1,3 +1,4 @@
+// src/modules/creators/creators.schemas.ts
 import { z } from 'zod';
 import { creatorListSortDirectionQueryParam } from './creators.sort-direction.parse';
 import { creatorListIncludeQueryParam } from './creators.include.parse';
@@ -12,6 +13,7 @@ import {
    CREATOR_LIST_SORT_FIELDS,
    DEFAULT_CREATOR_LIST_SORT,
 } from '../../constants/creator-list-sort.constants';
+import { normalizeCreatorListSearchTerm } from './creators.search-term.utils';
 
 /**
  * Validation schema for creator list query parameters.
@@ -39,7 +41,9 @@ export const CreatorListQuerySchema = z.object({
 
    // Sorting
    sort: withCreatorListQueryStringNormalization(
-      z.enum(CREATOR_LIST_SORT_FIELDS).optional().default(DEFAULT_CREATOR_LIST_SORT)
+      z.enum(CREATOR_LIST_SORT_FIELDS)
+         .optional()
+         .default(DEFAULT_CREATOR_LIST_SORT)
    ),
    order: creatorListSortDirectionQueryParam(),
    include: creatorListIncludeQueryParam(),
@@ -54,7 +58,12 @@ export const CreatorListQuerySchema = z.object({
             return val === 'true';
          })
    ),
-   search: withCreatorListQueryStringNormalization(z.string().optional()),
+   search: withCreatorListQueryStringNormalization(
+      z
+         .string()
+         .optional()
+         .transform(val => normalizeCreatorListSearchTerm(val))
+   ),
 });
 
 export type CreatorListQueryType = z.infer<typeof CreatorListQuerySchema>;
