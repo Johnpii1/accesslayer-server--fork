@@ -14,7 +14,6 @@ import { getPaginatedCreators } from './creator.service';
 import { parseCreatorSortOptions } from './creator.utils';
 import { parsePublicQuery } from '../../utils/public-query-parse.utils';
 import { wrapPublicCreatorListResponse } from '../creators/public-creator-list-envelope.utils';
-import { resolveCreatorListLimit } from '../creators/creators.limit.utils';
 import { buildCreatorListRequestContext } from '../creators/creator-list-context.utils';
 import { normalizeCreatorListPage } from './creator-list-page.guard';
 
