@@ -9,6 +9,7 @@ import {
    CreatorListItem,
    mapCreatorListItem,
 } from './creator-list-item.mapper';
+import { normalizeCreatorDisplayName } from './creator-display-name.utils';
 
 /**
  * Creator summary shape for list responses.
@@ -42,7 +43,7 @@ export function serializeCreatorSummary(
    return {
       id: profile.id,
       handle: profile.handle,
-      displayName: profile.displayName,
+      displayName: normalizeCreatorDisplayName(profile.displayName),
       avatarUrl: profile.avatarUrl,
       isVerified: profile.isVerified,
    };

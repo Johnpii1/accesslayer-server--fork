@@ -1,4 +1,5 @@
 import { CreatorProfile } from '../../types/profile.types';
+import { normalizeCreatorDisplayName } from './creator-display-name.utils';
 
 /**
  * Locked output shape for creator list items.
@@ -20,7 +21,7 @@ export const mapCreatorListItem = (
 ): CreatorListItem => {
    return {
       id: creator.id,
-      name: creator.displayName ?? null,
+      name: normalizeCreatorDisplayName(creator.displayName),
       avatar: creator.avatarUrl ?? null,
       followers: 0,
    };

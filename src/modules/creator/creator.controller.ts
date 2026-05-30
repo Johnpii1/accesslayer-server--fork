@@ -19,6 +19,7 @@ import {
    MAX_PAGE_SIZE,
 } from '../../constants/pagination.constants';
 import { PUBLIC_PAGE_PAGINATION_DEFAULTS } from '../../utils/public-list-query-defaults';
+import { normalizeCreatorDisplayName } from '../creators/creator-display-name.utils';
 
 const LegacyCreatorQuerySchema = z.object({
    page: safeIntParam({
@@ -59,9 +60,16 @@ export async function listCreators(req: Request, res: Response) {
          sort,
       });
 
+      const displayReadyCreators = creators.map(
+         (creator: { displayName: string }) => ({
+            ...creator,
+            displayName: normalizeCreatorDisplayName(creator.displayName),
+         })
+      );
+
       return sendSuccess(
          res,
-         wrapPublicCreatorListResponse(creators, meta),
+         wrapPublicCreatorListResponse(displayReadyCreators, meta),
          200,
          'Creators retrieved successfully'
       );
